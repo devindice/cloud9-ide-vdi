@@ -181,12 +181,8 @@ RUN apt -y remove thunar
 COPY rootfs /
 
 # Extras
-RUN tar xvfz /etc/osmosis/osmosis-0.48.3.tgz --directory /etc/osmosis
-RUN tar xvfz /etc/osmosis/osmosis-0.48.3.tgz --directory /etc/osmosis
-RUN chmod a+x /etc/osmosis/bin/osmosis
-RUN ln -sf /etc/osmosis/bin/osmosis /bin
-
-RUN apt -y install osmctools
+RUN apt -y install osmctools osmosis whiptail
+RUN systemctl disable systemd-resolved
 
 #RUN rm -rf /workspace/*
 
