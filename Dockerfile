@@ -91,7 +91,7 @@ RUN apt update \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /workspace
+#RUN mkdir /workspace
 
 # Clone and install cloud9
 RUN git clone https://github.com/c9/core.git /cloud9/c9sdk
@@ -147,7 +147,7 @@ COPY --from=builder /src/web/dist/ /usr/local/lib/web/frontend/
 RUN ln -sf /usr/local/lib/web/frontend/static/websockify /usr/local/lib/web/frontend/static/novnc/utils/websockify && \
 	chmod +x /usr/local/lib/web/frontend/static/websockify/run
 
-EXPOSE 80
+EXPOSE 6080
 EXPOSE 9999
 
 WORKDIR /workspace
@@ -179,8 +179,12 @@ RUN apt -y remove thunar
 
 # Copy files
 COPY rootfs /
-RUN rm -rf /workspace/*
 
+# Extras
+RUN apt -y install osmctools osmosis whiptail
+RUN systemctl disable systemd-resolved
+
+#RUN rm -rf /workspace/*
 
 RUN useradd -d /home/ubuntu -u 99 -G sudo -ms /bin/bash ubuntu
 #RUN adduser ubuntu sudo
@@ -193,4 +197,4 @@ CMD /bin/bash
 
 run bash /cloud9/user-install.sh
 
-user root 
+user root

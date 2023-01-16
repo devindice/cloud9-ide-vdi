@@ -25,6 +25,12 @@ if [ -n "$TZ" ]; then
     dpkg-reconfigure --frontend noninteractive tzdata
 fi
 
+if [ -n "$FILE_SHARE" ]; then
+    sed -i "s/%FILE_SHARE%/$FILE_SHARE/" /etc/xdg/user-dirs.defaults
+else
+    FILE_SHARE=_Shared_Files_
+    sed -i "s/%FILE_SHARE%/_Shared_Files_/" /etc/xdg/user-dirs.defaults
+fi
 
 #sed -i "s#/usr/share/backgrounds.*#/usr/share/backgrounds/default.png\"/>#g" /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 
@@ -105,10 +111,10 @@ fi
 #chown $USER:$USER /workspace/.c9
 
  
+chown -R $USER:$USER /home/$USER
 
 
-
-#sudo -H -u $USER bash -c 'bash /cloud9/user-install.sh' 2>&1> /home/$USER/.cloud9-install.log &
+sudo -H -u $USER bash -c 'bash /cloud9/user-install.sh' 2>&1> /home/$USER/.cloud9-install.log &
 
 # Only for testing while editing the menu
 #chown $USER /usr/share/applications/
@@ -124,8 +130,9 @@ fi
 
 bash /cloud9/configure_desktop.sh &
 
-mkdir -p /home/$USER/Workspace/-Shared\ Files-
+mkdir -p /home/$USER/Workspace/$FILE_SHARE
 grep -qxF "/home/$USER/Workspace /workspace none defaults,bind 0 0" /etc/fstab || echo "/home/$USER/Workspace /workspace none defaults,bind 0 0" >> /etc/fstab
+grep -qxF "/home/$USER/Workspace/$FILE_SHARE /workspace/$FILE_SHARE none defaults,bind 0 0" /etc/fstab || echo "/home/$USER/Workspace/$FILE_SHARE /workspace/$FILE_SHARE none defaults,bind 0 0" >> /etc/fstab
 mount -a
 
 # Make directory for bookmarks
@@ -134,7 +141,7 @@ mkdir -p /home/$USER/.config/gtk-3.0
 # Keep these bookmarks
 #grep "Documents" /home/$USER/.config/gtk-3.0/bookmarks || echo "file:///home/$USER/Documents" >> /home/$USER/.config/gtk-3.0/bookmarks
 grep "Workspace" /home/$USER/.config/gtk-3.0/bookmarks || echo "file:///home/$USER/Workspace" >> /home/$USER/.config/gtk-3.0/bookmarks
-grep "Shared%20Files" /home/$USER/.config/gtk-3.0/bookmarks || echo "file:///home/$USER/Workspace/-Shared%20Files-" >> /home/$USER/.config/gtk-3.0/bookmarks
+grep "$FILE_SHARE" /home/$USER/.config/gtk-3.0/bookmarks || echo "file:///home/$USER/Workspace/$FILE_SHARE" >> /home/$USER/.config/gtk-3.0/bookmarks
 grep "Downloads" /home/$USER/.config/gtk-3.0/bookmarks || echo "file:///home/$USER/Downloads" >> /home/$USER/.config/gtk-3.0/bookmarks
 
 # Duke.edu repo is down 8/18/2020
@@ -145,15 +152,14 @@ if [ -n "$HOSTNAME" ]; then
 fi
 
 if [ -n "$NAMESERVER" ]; then
-    sed -i "s/%nameserver%/$NAMESERVER/" /etc/resolv.conf
+    echo "nameserver $NAMESERVER" > /etc/resolv.conf
 else
-    sed -i "s/%nameserver%/nameserver 127.0.0.11/" /etc/resolv.conf
+    echo "nameserver 127.0.0.11" > /etc/resolv.conf
 fi
 
 if [ -n "$SEARCHDOMAIN" ]; then
-    sed -i "s/%searchdomain%/$SEARCHDOMAIN/" /etc/resolv.conf
-else
-    sed -i "s/%searchdomain%/" /etc/resolv.conf
+    echo "search $SEARCHDOMAIN" >> /etc/resolv.conf
 fi
 
+chown -R $USER:$USER /home/$USER
 exec /bin/tini -- supervisord -n -c /etc/supervisor/supervisord.conf
