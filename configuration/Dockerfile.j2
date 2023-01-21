@@ -4,9 +4,11 @@
 # base system
 ################################################################################
 
-
+{% if version == "22" %}
 FROM ubuntu:22.04 as system
-
+{% else %}
+FROM ubuntu:20.04 as system
+{% endif %}
 
 RUN sed -i 's#http://archive.ubuntu.com/ubuntu/#mirror://mirrors.ubuntu.com/mirrors.txt#' /etc/apt/sources.list;
 
@@ -36,7 +38,7 @@ RUN apt update \
 # install debs error if combine together
 RUN apt update \
     && apt install -y -o Dpkg::Options::='--force-confold' --no-install-recommends --allow-unauthenticated \
-        xvfb x11vnc ttf-wqy-zenhei  \
+        xvfb x11vnc ttf-ubuntu-font-family ttf-wqy-zenhei  \
     && apt autoclean -y \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
@@ -71,18 +73,18 @@ RUN apt update \
     && ln -s /usr/bin/ffmpeg /usr/local/ffmpeg/ffmpeg
 
 # python library
-COPY rootfs/usr/local/lib/web/backend/requirements.txt /tmp/
-RUN apt-get update \
-    && dpkg-query -W -f='${Package}\n' > /tmp/a.txt \
-    && apt-get install -y python3-pip python3-dev build-essential \
-	&& pip3 install setuptools wheel && pip3 install -r /tmp/requirements.txt \
-    && ln -s /usr/bin/python3 /usr/local/bin/python \
-    && dpkg-query -W -f='${Package}\n' > /tmp/b.txt \
-    && apt-get remove -y `diff --changed-group-format='%>' --unchanged-group-format='' /tmp/a.txt /tmp/b.txt | xargs` \
-    && apt-get autoclean -y \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/apt/* /tmp/a.txt /tmp/b.txt
+#COPY rootfs/usr/local/lib/web/backend/requirements.txt /tmp/
+#RUN apt-get update \
+#    && dpkg-query -W -f='${Package}\n' > /tmp/a.txt \
+#    && apt-get install -y python3-pip python3-dev build-essential \
+#	&& pip3 install setuptools wheel && pip3 install -r /tmp/requirements.txt \
+#    && ln -s /usr/bin/python3 /usr/local/bin/python \
+#    && dpkg-query -W -f='${Package}\n' > /tmp/b.txt \
+#    && apt-get remove -y `diff --changed-group-format='%>' --unchanged-group-format='' /tmp/a.txt /tmp/b.txt | xargs` \
+#    && apt-get autoclean -y \
+#    && apt-get autoremove -y \
+#    && rm -rf /var/lib/apt/lists/* \
+#    && rm -rf /var/cache/apt/* /tmp/a.txt /tmp/b.txt
 
 # Install Additonal Packages
 RUN mkdir /cloud9
