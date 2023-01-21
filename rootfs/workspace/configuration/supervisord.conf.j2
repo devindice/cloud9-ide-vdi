@@ -8,10 +8,22 @@ directory=/root
 priority=10
 command=nginx -c /etc/nginx/nginx.conf -g 'daemon off;'
 
+{% if desktop == "enabled" %}
+[program:web]
+priority=10
+directory=/usr/local/lib/web/backend
+command=/usr/local/lib/web/backend/run.py
+stdout_logfile=/dev/fd/1
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/fd/1
+stderr_logfile_maxbytes=0
 
 [group:x]
+programs=xfce4,xvfb,x11vnc,novnc,cloud9,desktop
+{% else %}
+[group:x]
 programs=cloud9
-
+{% endif %}
 
 [program:xfce4]
 priority=15
@@ -52,3 +64,4 @@ priority=25
 directory=/cloud9/c9sdk
 user=%USER%
 command=bash -c 'while ps aux | grep user-install.sh | grep -v grep 2>&1> /dev/null; do sleep 1; done; node server.js -l 0.0.0.0 -p 9999 -a : -w /workspace'
+
