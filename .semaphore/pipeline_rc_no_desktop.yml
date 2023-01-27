@@ -15,9 +15,10 @@ blocks:
       jobs:
         - name: Build and Push
           commands:
+            - 'ls -lah'
             - 'df -h'
             - 'docker rmi -f $(docker images -q)'
-            - 'docker prune -af'
+            - 'docker prune -f'
             - checkout
             - git submodule update --init --recursive
             - '# Login to Dockerhub'
@@ -28,6 +29,8 @@ blocks:
             - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing-no-desktop -t $DOCKER_USERNAME/cloud9-ide-vdi:testing-no-desktop .'
             - '# Push the test version'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing-no-desktop'
+            - 'ls -lah'
+            - 'df -h'
       secrets:
         - name: Dockerhub
 
