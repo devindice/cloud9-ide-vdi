@@ -173,7 +173,10 @@ RUN wget -O beyond-compare.deb https://www.scootersoftware.com/$(curl -sd "platf
 RUN wget -O sublime-text.deb $(curl -s https://www.sublimetext.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O sublime-merge.deb $(curl -s https://www.sublimemerge.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O chrome.deb wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || true
-RUN apt install -y ./beyond-compare.deb ./sublime-text.deb ./sublime-merge.deb ./chrome.deb
+RUN apt install -y ./beyond-compare.deb
+RUN apt install -y ./sublime-text.deb
+RUN apt install -y ./sublime-merge.deb
+RUN apt install -y ./chrome.deb
 
 RUN npm -g install sass yuglify
 
@@ -183,7 +186,7 @@ RUN apt -y remove thunar
 COPY rootfs /
 
 # Extras
-RUN apt -y install ansible terraform golang whiptail osmctools osmosis
+RUN apt -y install ansible terraform golang whiptail osmctools osmosis cron
 
 #RUN rm -rf /workspace/*
 
