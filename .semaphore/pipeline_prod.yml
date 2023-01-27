@@ -18,7 +18,7 @@ blocks:
             - 'ls -lah'
             - 'df -h'
             - 'docker rmi -f $(docker images -q)'
-            - 'docker prune -f'
+            - 'docker image prune -af'
             - checkout
             - git submodule update --init --recursive
             - DATE=$(date +%y%U%u)
