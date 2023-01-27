@@ -186,7 +186,7 @@ RUN apt -y remove thunar
 COPY rootfs /
 
 # Extras
-RUN apt -y install ansible terraform golang whiptail osmctools osmosis
+RUN apt -y install ansible terraform golang whiptail osmctools osmosis cron
 
 #RUN rm -rf /workspace/*
 
