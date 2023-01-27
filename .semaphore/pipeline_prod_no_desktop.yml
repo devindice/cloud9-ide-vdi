@@ -15,6 +15,9 @@ blocks:
       jobs:
         - name: Tag and Push
           commands:
+            - 'df -h'
+            - 'docker rmi -f $(docker images -q)'
+            - 'docker prune -af'
             - checkout
             - git submodule update --init --recursive
             - DATE=$(date +%y%U%u)
@@ -35,5 +38,3 @@ blocks:
       epilogue:
         always:
           commands:
-            - 'docker rmi -f $(docker images -q)'
-            - 'docker prune -af'
