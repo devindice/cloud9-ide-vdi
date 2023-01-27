@@ -30,7 +30,3 @@ blocks:
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing'
       secrets:
         - name: Dockerhub
-
-      epilogue:
-        always:
-          commands:
