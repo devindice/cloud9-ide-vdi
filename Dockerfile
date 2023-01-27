@@ -114,20 +114,32 @@ RUN sed -i 's#http://archive.ubuntu.com/ubuntu/#mirror://mirrors.ubuntu.com/mirr
 
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gnupg patch
+    && apt-get install -y --no-install-recommends curl gnupg patch \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # nodejs
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
-    && apt-get install -y nodejs
+    && apt-get install -y nodejs \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
-    && apt-get install -y yarn
+    && apt-get install -y yarn \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # build frontend
 COPY web /src/web
@@ -186,7 +198,11 @@ RUN apt -y remove thunar
 COPY rootfs /
 
 # Extras
-RUN apt -y install ansible terraform golang whiptail osmctools osmosis cron
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ansible terraform golang whiptail osmctools osmosis cron \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 #RUN rm -rf /workspace/*
 

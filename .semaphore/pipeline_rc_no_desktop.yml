@@ -27,3 +27,9 @@ blocks:
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing-no-desktop'
       secrets:
         - name: Dockerhub
+
+      epilogue:
+        always:
+          commands:
+            - 'docker rmi $(docker images -q)'
+            - 'docker prune -af'
