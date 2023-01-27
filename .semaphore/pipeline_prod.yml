@@ -34,8 +34,4 @@ blocks:
 
       secrets:
         - name: Dockerhub
-        
-      epilogue:
-        always:
-          commands:
 
