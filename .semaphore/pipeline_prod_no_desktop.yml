@@ -15,9 +15,10 @@ blocks:
       jobs:
         - name: Tag and Push
           commands:
+            - 'ls -lah'
             - 'df -h'
             - 'docker rmi -f $(docker images -q)'
-            - 'docker prune -af'
+            - 'docker prune -f'
             - checkout
             - git submodule update --init --recursive
             - DATE=$(date +%y%U%u)
@@ -31,6 +32,7 @@ blocks:
             - 'docker image tag $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
-
+            - 'ls -lah'
+            - 'df -h'
       secrets:
         - name: Dockerhub
