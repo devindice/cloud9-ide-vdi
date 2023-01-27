@@ -15,20 +15,22 @@ blocks:
       jobs:
         - name: Tag and Push
           commands:
-            - 'ls -lah'
-            - 'df -h'
             - 'docker rmi -f $(docker images -q)'
             - 'docker image prune -af'
+            - 'ls -lah'
+            - 'df -h'
             - checkout
             - git submodule update --init --recursive
+            - 'df -h'
             - DATE=$(date +%y%U%u)
             - 'VERSION="${DATE}"'
             - '# Login to Dockerhub'
             - 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin'
-            - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop || true'
+#            - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop || true'
             - 'cd ./configuration && python configure.py --desktop disabled'
             - 'cd ../'
-            - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
+#            - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
+            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
             - 'docker image tag $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
@@ -36,3 +38,8 @@ blocks:
             - 'df -h'
       secrets:
         - name: Dockerhub
+      epilogue:
+        always:
+          commands:
+            - 'ls -lah'
+            - 'df -h'
