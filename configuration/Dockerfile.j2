@@ -222,6 +222,18 @@ RUN apt-get update \
     && apt autoclean -y \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
+    
+RUN sudo apt-get update \
+    && sudo apt-get install -y gnupg software-properties-common\
+    && sudo apt update && sudo apt install gpg\
+    && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
+    && sudo apt update \
+    && sudo apt install terraform \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 {% endif %}
 
 RUN systemctl disable systemd-resolved
@@ -232,6 +244,8 @@ RUN useradd -d /home/ubuntu -u 99 -G sudo -ms /bin/bash ubuntu
 #RUN adduser ubuntu sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chown ubuntu:ubuntu /home/ubuntu
+
+
 
 # Install from user (not doing)
 USER ubuntu
