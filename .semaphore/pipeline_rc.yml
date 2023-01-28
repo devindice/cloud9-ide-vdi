@@ -23,11 +23,11 @@ blocks:
             - git submodule update --init --recursive
             - 'df -h'
             - '# Login to Dockerhub'
-#            - 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin'
+            - 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin'
             - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:testing || true'
             - 'cd ./configuration && python configure.py --desktop enabled'
             - 'cd ../'
-#            - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
+            - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
             - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
             - '# Push the test version'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing'
@@ -35,8 +35,3 @@ blocks:
             - 'df -h'
       secrets:
         - name: Dockerhub
-      epilogue:
-        always:
-          commands:
-            - 'ls -lah'
-            - 'df -h'
