@@ -26,7 +26,7 @@ blocks:
             - 'cd ../'
             - 'df -h'
             - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 -t $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 .'
-            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 .'
+#            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 .'
             - '# Push the test version'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04'
             - 'df -h'
