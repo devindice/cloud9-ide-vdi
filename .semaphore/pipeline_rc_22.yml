@@ -13,7 +13,7 @@ blocks:
   - name: RC Build
     task:
       jobs:
-        - name: Build and Push
+        - name: Build and Push RC 22.04
           commands:
             - 'docker rmi -f $(docker images -q)'
             - 'docker image prune -af'
