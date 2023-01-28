@@ -201,7 +201,7 @@ RUN wget -O /cloud9/beyond-compare.deb https://www.scootersoftware.com/$(curl -s
 RUN wget -O /cloud9/sublime-text.deb $(curl -s https://www.sublimetext.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O /cloud9/sublime-merge.deb $(curl -s https://www.sublimemerge.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O /cloud9/chrome.deb wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || true
-#RUN apt install -y /cloud9/beyond-compare.deb
+RUN apt install -y /cloud9/beyond-compare.deb
 RUN apt install -y /cloud9/sublime-text.deb
 RUN apt install -y /cloud9/sublime-merge.deb
 RUN apt install -y /cloud9/chrome.deb

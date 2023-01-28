@@ -5,9 +5,9 @@ agent:
     type: e1-standard-4
     os_image: ubuntu2004
     
-queue:
-  name: Deployment queue
-  scope: project
+#queue:
+#  name: Deployment queue
+#  scope: project
     
 blocks:
   - name: RC Build
@@ -15,9 +15,6 @@ blocks:
       jobs:
         - name: Build and Push RC
           commands:
-            - 'docker rmi -f $(docker images -q)'
-            - 'docker image prune -af'
-            - 'ls -lah'
             - 'df -h'
             - checkout
             - git submodule update --init --recursive
@@ -27,11 +24,11 @@ blocks:
             - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:testing || true'
             - 'cd ./configuration && python configure.py --desktop enabled'
             - 'cd ../'
+            - 'df -h'
             - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
             - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
             - '# Push the test version'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing'
-            - 'ls -lah'
             - 'df -h'
       secrets:
         - name: Dockerhub
