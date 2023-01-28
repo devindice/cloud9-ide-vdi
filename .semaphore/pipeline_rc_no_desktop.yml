@@ -13,7 +13,7 @@ blocks:
   - name: RC Build
     task:
       jobs:
-        - name: Build and Push
+        - name: Build and Push RC No Desktop
           commands:
             - 'docker rmi -f $(docker images -q)'
             - 'docker image prune -af'
