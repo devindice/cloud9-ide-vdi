@@ -28,7 +28,7 @@ blocks:
             - 'cd ../'
             - 'df -h'
             - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
-            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
+#            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
             - 'docker image tag $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
