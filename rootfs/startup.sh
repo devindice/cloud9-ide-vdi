@@ -163,7 +163,7 @@ fi
 
 if [ -n "$AFTERINSTALL" ]; then
     if [ -d "/etc/config" ]; then
-        bash /etc/config/$AFTERINSTALL
+        bash /etc/config/$AFTERINSTALL &
     fi
 fi
 
