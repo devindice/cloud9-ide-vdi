@@ -167,5 +167,8 @@ if [ -n "$AFTERINSTALL" ]; then
     fi
 fi
 
+/etc/init.d/cron start
+/etc/init.d/rsyslog start
+
 chown -R $USER:$USER /home/$USER
 exec /bin/tini -- supervisord -n -c /etc/supervisor/supervisord.conf
