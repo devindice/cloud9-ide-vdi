@@ -111,8 +111,7 @@ fi
 #chown $USER:$USER /workspace/.c9
 
  
-chown -R $USER:$USER /home/$USER
-
+find /home/$USER -maxdepth 1 -type d | grep -Ev 'Workspace|.c9|Downloads|Desktop' -exec chown $USER:$USER {} \;
 
 sudo -H -u $USER bash -c 'bash /cloud9/user-install.sh' 2>&1> /home/$USER/.cloud9-install.log &
 
@@ -170,5 +169,5 @@ fi
 /etc/init.d/cron start
 /etc/init.d/rsyslog start
 
-chown -R $USER:$USER /home/$USER
+find /home/$USER -maxdepth 1 -type d | grep -Ev 'Workspace|.c9|Downloads|Desktop' -exec chown $USER:$USER {} \;
 exec /bin/tini -- supervisord -n -c /etc/supervisor/supervisord.conf
