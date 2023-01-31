@@ -2,16 +2,23 @@ version: v1.0
 name: Deploy Prod No Desktop
 agent:
   machine:
-    type: e1-standard-2
+    type: e1-standard-4
     os_image: ubuntu2004
+    
+#queue:
+#  name: Deployment queue
+#  scope: project
+  
 blocks:
   - name: Production Build
     task:
       jobs:
-        - name: Tag and Push
+        - name: Build and Push Prod No Desktop
           commands:
+            - 'df -h'
             - checkout
             - git submodule update --init --recursive
+            - 'df -h'
             - DATE=$(date +%y%U%u)
             - 'VERSION="${DATE}"'
             - '# Login to Dockerhub'
@@ -19,10 +26,13 @@ blocks:
             - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop || true'
             - 'cd ./configuration && python configure.py --desktop disabled'
             - 'cd ../'
+            - 'df -h'
             - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
+#            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop .'
             - 'docker image tag $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:latest-no-desktop'
             - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:$VERSION-no-desktop'
-
+            - 'df -h'
       secrets:
         - name: Dockerhub
+

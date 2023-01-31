@@ -99,7 +99,7 @@ RUN apt update \
 RUN git clone https://github.com/c9/core.git /cloud9/c9sdk
 #RUN mkdir -p /cloud9/c9sdk/build /workspace/.ubuntu/.standalone
 #RUN ln -sf /workspace/.ubuntu/.standalone /cloud9/c9sdk/build/standalone
-RUN /cloud9/c9sdk/scripts/install-sdk.sh
+#RUN /cloud9/c9sdk/scripts/install-sdk.sh
 RUN cd /cloud9/c9sdk && git reset --hard
 RUN wget -O user-install.sh https://raw.githubusercontent.com/c9/install/master/install.sh && mv user-install.sh /cloud9/
 
@@ -114,20 +114,32 @@ RUN sed -i 's#http://archive.ubuntu.com/ubuntu/#mirror://mirrors.ubuntu.com/mirr
 
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gnupg patch
+    && apt-get install -y --no-install-recommends curl gnupg patch \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # nodejs
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
-    && apt-get install -y nodejs
+    && apt-get install -y nodejs \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
-    && apt-get install -y yarn
+    && apt-get install -y yarn \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # build frontend
 COPY web /src/web
@@ -173,7 +185,10 @@ RUN wget -O beyond-compare.deb https://www.scootersoftware.com/$(curl -sd "platf
 RUN wget -O sublime-text.deb $(curl -s https://www.sublimetext.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O sublime-merge.deb $(curl -s https://www.sublimemerge.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O chrome.deb wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || true
-RUN apt install -y ./beyond-compare.deb ./sublime-text.deb ./sublime-merge.deb ./chrome.deb
+RUN apt install -y ./beyond-compare.deb
+RUN apt install -y ./sublime-text.deb
+RUN apt install -y ./sublime-merge.deb
+RUN apt install -y ./chrome.deb
 
 RUN npm -g install sass yuglify
 
@@ -183,8 +198,11 @@ RUN apt -y remove thunar
 COPY rootfs /
 
 # Extras
-RUN apt -y install osmctools osmosis whiptail
-RUN systemctl disable systemd-resolved
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ansible terraform golang whiptail osmctools osmosis cron \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 #RUN rm -rf /workspace/*
 

@@ -1,5 +1,5 @@
 version: v1.0
-name: Deploy RC
+name: Deploy RC 22.04
 agent:
   machine:
     type: e1-standard-4
@@ -8,12 +8,12 @@ agent:
 #queue:
 #  name: Deployment queue
 #  scope: project
-    
+
 blocks:
   - name: RC Build
     task:
       jobs:
-        - name: Build and Push RC
+        - name: Build and Push RC 22.04
           commands:
             - 'df -h'
             - checkout
@@ -21,14 +21,15 @@ blocks:
             - 'df -h'
             - '# Login to Dockerhub'
             - 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin'
-            - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:testing || true'
-            - 'cd ./configuration && python configure.py --desktop enabled'
+            - 'docker pull $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 || true'
+            - 'cd ./configuration && python configure.py --desktop enabled --ubuntu 22'
             - 'cd ../'
             - 'df -h'
-            - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
-#            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:testing .'
+            - 'docker build --cache-from=$DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 -t $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 .'
+#            - 'docker build -t $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04 .'
             - '# Push the test version'
-            - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing'
+            - 'docker push $DOCKER_USERNAME/cloud9-ide-vdi:testing-22.04'
             - 'df -h'
       secrets:
         - name: Dockerhub
+
