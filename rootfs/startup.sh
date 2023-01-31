@@ -113,7 +113,7 @@ fi
  
 find /home/$USER -maxdepth 1 -type d | grep -Ev 'Workspace|.c9|Downloads|Desktop' -exec chown $USER:$USER {} \;
 
-sudo -H -u $USER bash -c 'bash /cloud9/user-install.sh' 2>&1> /home/$USER/.cloud9-install.log &
+[ -d /home/devin.dice/.c9 ] || sudo -H -u $USER bash -c 'bash /cloud9/user-install.sh' 2>&1> /home/$USER/.cloud9-install.log &
 
 # Only for testing while editing the menu
 #chown $USER /usr/share/applications/
