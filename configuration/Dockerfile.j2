@@ -209,10 +209,6 @@ RUN apt install -y /cloud9/chrome.deb
 RUN cd /cloud9 && unzip awscliv2.zip
 RUN cd /cloud9 && ./aws/install
 
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-
 RUN npm -g install sass yuglify
 
 RUN apt -y remove thunar
