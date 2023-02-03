@@ -5,10 +5,10 @@
 ################################################################################
 
 
-FROM ubuntu:22.04 as system
-
-
+FROM ubuntu:20.04 as system
 RUN sed -i 's#http://archive.ubuntu.com/ubuntu/#mirror://mirrors.ubuntu.com/mirrors.txt#' /etc/apt/sources.list;
+
+
 
 # Ca-Certificates
 RUN apt update \
@@ -33,21 +33,16 @@ RUN apt update \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
     
+
 # install debs error if combine together
 RUN apt update \
     && apt install -y -o Dpkg::Options::='--force-confold' --no-install-recommends --allow-unauthenticated \
-        xvfb x11vnc ttf-wqy-zenhei  \
+        xvfb x11vnc ttf-ubuntu-font-family ttf-wqy-zenhei  \
     && apt autoclean -y \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-#RUN apt update \
-#    && apt install -y gpg-agent \
-#    && curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-#    && (dpkg -i ./google-chrome-stable_current_amd64.deb || apt-get install -fy) \
-#    && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add \
-#    && rm google-chrome-stable_current_amd64.deb \
-#    && rm -rf /var/lib/apt/lists/*
+
 
 # Install Desktop
 RUN apt update \
@@ -70,6 +65,7 @@ RUN apt update \
     && mkdir /usr/local/ffmpeg \
     && ln -s /usr/bin/ffmpeg /usr/local/ffmpeg/ffmpeg
 
+
 # python library
 COPY rootfs/usr/local/lib/web/backend/requirements.txt /tmp/
 RUN apt-get update \
@@ -83,6 +79,8 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/apt/* /tmp/a.txt /tmp/b.txt
+
+
 
 # Install Additonal Packages
 RUN mkdir /cloud9
@@ -99,6 +97,9 @@ RUN apt update \
 RUN git clone https://github.com/c9/core.git /cloud9/c9sdk
 #RUN mkdir -p /cloud9/c9sdk/build /workspace/.ubuntu/.standalone
 #RUN ln -sf /workspace/.ubuntu/.standalone /cloud9/c9sdk/build/standalone
+
+RUN /cloud9/c9sdk/scripts/install-sdk.sh
+
 #RUN /cloud9/c9sdk/scripts/install-sdk.sh
 RUN cd /cloud9/c9sdk && git reset --hard
 RUN wget -O user-install.sh https://raw.githubusercontent.com/c9/install/master/install.sh && mv user-install.sh /cloud9/
@@ -107,39 +108,30 @@ RUN wget -O user-install.sh https://raw.githubusercontent.com/c9/install/master/
 ################################################################################
 # builder
 ################################################################################
+
 FROM ubuntu:20.04 as builder
-
-
 RUN sed -i 's#http://archive.ubuntu.com/ubuntu/#mirror://mirrors.ubuntu.com/mirrors.txt#' /etc/apt/sources.list;
 
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
-    && apt autoclean -y \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl gnupg patch \
-    && apt autoclean -y \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends ca-certificates
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl gnupg patch
 
 # nodejs
+
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
-    && apt-get install -y nodejs \
-    && apt autoclean -y \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y nodejs
+
+
 
 # yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
-    && apt-get install -y yarn \
-    && apt autoclean -y \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y yarn
 
 # build frontend
 COPY web /src/web
@@ -178,17 +170,23 @@ RUN echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 RUN apt-get update
+
 RUN apt-get -y install nautilus menulibre python3-pip keychain python3.8-venv strace gedit gvfs-backends
+
+
 RUN apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-RUN wget -O beyond-compare.deb https://www.scootersoftware.com/$(curl -sd "platform=linux" https://www.scootersoftware.com/download.php | grep amd64.deb | awk -F\" '{print $2}' | sed 's/\///g')
-RUN wget -O sublime-text.deb $(curl -s https://www.sublimetext.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
-RUN wget -O sublime-merge.deb $(curl -s https://www.sublimemerge.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
-RUN wget -O chrome.deb wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || true
-RUN apt install -y ./beyond-compare.deb
-RUN apt install -y ./sublime-text.deb
-RUN apt install -y ./sublime-merge.deb
-RUN apt install -y ./chrome.deb
+RUN wget -O /cloud9/beyond-compare.deb https://www.scootersoftware.com/$(curl -sd "platform=linux" https://www.scootersoftware.com/download.php | grep amd64.deb | awk -F\" '{print $2}' | sed 's/\///g')
+RUN wget -O /cloud9/sublime-text.deb $(curl -s https://www.sublimetext.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
+RUN wget -O /cloud9/sublime-merge.deb $(curl -s https://www.sublimemerge.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
+RUN wget -O /cloud9/chrome.deb wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || true
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/cloud9/awscliv2.zip"
+RUN apt install -y /cloud9/beyond-compare.deb
+RUN apt install -y /cloud9/sublime-text.deb
+RUN apt install -y /cloud9/sublime-merge.deb
+RUN apt install -y /cloud9/chrome.deb
+RUN cd /cloud9 && unzip awscliv2.zip
+RUN cd /cloud9 && ./aws/install
 
 RUN npm -g install sass yuglify
 
@@ -198,11 +196,27 @@ RUN apt -y remove thunar
 COPY rootfs /
 
 # Extras
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ansible terraform golang whiptail osmctools osmosis cron \
+    && apt-get install -y --no-install-recommends ansible golang whiptail osmctools osmosis cron rsyslog rsync \
     && apt autoclean -y \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
+    
+RUN sudo apt-get update \
+    && sudo apt-get install -y gnupg software-properties-common\
+    && sudo apt update && sudo apt install gpg\
+    && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
+    && sudo apt update \
+    && sudo apt install terraform \
+    && apt autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+
+RUN systemctl disable systemd-resolved
 
 #RUN rm -rf /workspace/*
 
@@ -210,6 +224,14 @@ RUN useradd -d /home/ubuntu -u 99 -G sudo -ms /bin/bash ubuntu
 #RUN adduser ubuntu sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chown ubuntu:ubuntu /home/ubuntu
+
+RUN rm -rf /cloud9/sublime-merge.deb \
+    /cloud9/sublime-text.deb \
+    /cloud9/chrome.deb \
+    /cloud9/beyond-compare.deb \
+    /cloud9/awscliv2.zip \
+    /cloud9/aws
+
 
 # Install from user (not doing)
 USER ubuntu
