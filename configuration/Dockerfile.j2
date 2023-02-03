@@ -201,10 +201,17 @@ RUN wget -O /cloud9/beyond-compare.deb https://www.scootersoftware.com/$(curl -s
 RUN wget -O /cloud9/sublime-text.deb $(curl -s https://www.sublimetext.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O /cloud9/sublime-merge.deb $(curl -s https://www.sublimemerge.com/download_thanks?target=x64-deb#direct-downloads | grep amd64.deb | grep url | awk -F'"' '{print $2}')
 RUN wget -O /cloud9/chrome.deb wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || true
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/cloud9/awscliv2.zip"
 RUN apt install -y /cloud9/beyond-compare.deb
 RUN apt install -y /cloud9/sublime-text.deb
 RUN apt install -y /cloud9/sublime-merge.deb
 RUN apt install -y /cloud9/chrome.deb
+RUN cd /cloud9 && unzip awscliv2.zip
+RUN cd /cloud9 && ./aws/install
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
 
 RUN npm -g install sass yuglify
 
@@ -218,7 +225,7 @@ COPY rootfs /
 #TBD
 {% else %}
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ansible golang whiptail osmctools osmosis cron rsyslog \
+    && apt-get install -y --no-install-recommends ansible golang whiptail osmctools osmosis cron rsyslog rsync \
     && apt autoclean -y \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
@@ -245,7 +252,12 @@ RUN useradd -d /home/ubuntu -u 99 -G sudo -ms /bin/bash ubuntu
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chown ubuntu:ubuntu /home/ubuntu
 
-RUN rm -rf /cloud9/sublime-merge.deb /cloud9/sublime-text.deb /cloud9/chrome.deb /cloud9/beyond-compare.deb
+RUN rm -rf /cloud9/sublime-merge.deb \
+    /cloud9/sublime-text.deb
+    /cloud9/chrome.deb
+    /cloud9/beyond-compare.deb 
+    /cloud9/awscliv2.zip
+    /cloud9/aws
 
 
 # Install from user (not doing)
